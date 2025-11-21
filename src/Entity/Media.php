@@ -7,7 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Post as ApiPost;
 use App\Controller\UploadMediaController;
 use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +24,7 @@ use ApiPlatform\OpenApi\Model;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(
+        new ApiPost(
             inputFormats: ['multipart' => ['multipart/form-data']],
             outputFormats: ['json' => ['application/json']],
             controller: UploadMediaController::class,
@@ -67,7 +67,7 @@ class Media
 
     #[ORM\OneToOne(inversedBy: 'media', cascade: ['persist', 'remove'])]
     #[Groups(['read'])]
-    private ?Product $product = null;
+    private ?Post $post = null;
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
     #[Groups(['read'])]
@@ -94,14 +94,14 @@ class Media
         return $this;
     }
 
-    public function getProduct(): ?Product
+    public function getPost(): ?Post
     {
-        return $this->product;
+        return $this->post;
     }
 
-    public function setProduct(?Product $product): static
+    public function setPost(?Post $post): static
     {
-        $this->product = $product;
+        $this->post = $post;
 
         return $this;
     }

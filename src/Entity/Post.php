@@ -10,21 +10,20 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Post as ApiPost;
 use ApiPlatform\Metadata\Put;
-use App\Repository\ProductRepository;
+use App\Repository\PostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
+        new ApiPost(),
         new Put(),
         new Patch(),
         new Delete()
@@ -33,17 +32,16 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['write']],
     forceEager: false
 )]
-#[UniqueEntity('titlz')]
 #[ApiFilter(SearchFilter::class, properties: [
     'id' => 'exact',
-    'titlz' => 'exact',
-    'content' => 'partial'
+    'content' => 'partial',
+    'author.username' => 'partial'
 ])]
 #[ApiFilter(
     DateFilter::class,
     properties: ['createdAt']
 )]
-class Product
+class Post
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -51,22 +49,30 @@ class Product
     #[Groups('read')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank()]
-    #[Groups(['read', 'write'])]
-    private ?string $titlz = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 280)]
     #[Groups(['read', 'write'])]
     private ?string $content = null;
 
     #[ORM\Column]
+    #[Groups('read')]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
-    private ?Category $category = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups('read')]
+    private ?User $author = null;
 
-    #[ORM\OneToOne(mappedBy: 'product', cascade: ['persist', 'remove'])]
+    #[ORM\Column]
+    #[Groups('read')]
+    private int $likesCount = 0;
+
+    #[ORM\Column]
+    #[Groups('read')]
+    private int $repostsCount = 0;
+
+    #[ORM\OneToOne(mappedBy: 'post', cascade: ['persist', 'remove'])]
     #[Groups('read')]
     private ?Media $media = null;
 
@@ -80,24 +86,12 @@ class Product
         return $this->id;
     }
 
-    public function getTitlz(): ?string
-    {
-        return $this->titlz;
-    }
-
-    public function setTitlz(string $titlz): static
-    {
-        $this->titlz = $titlz;
-
-        return $this;
-    }
-
     public function getContent(): ?string
     {
         return $this->content;
     }
 
-    public function setContent(?string $content): static
+    public function setContent(string $content): static
     {
         $this->content = $content;
 
@@ -116,14 +110,38 @@ class Product
         return $this;
     }
 
-    public function getCategory(): ?Category
+    public function getAuthor(): ?User
     {
-        return $this->category;
+        return $this->author;
     }
 
-    public function setCategory(?Category $category): static
+    public function setAuthor(?User $author): static
     {
-        $this->category = $category;
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getLikesCount(): int
+    {
+        return $this->likesCount;
+    }
+
+    public function setLikesCount(int $likesCount): static
+    {
+        $this->likesCount = $likesCount;
+
+        return $this;
+    }
+
+    public function getRepostsCount(): int
+    {
+        return $this->repostsCount;
+    }
+
+    public function setRepostsCount(int $repostsCount): static
+    {
+        $this->repostsCount = $repostsCount;
 
         return $this;
     }
@@ -137,12 +155,12 @@ class Product
     {
         // unset the owning side of the relation if necessary
         if ($media === null && $this->media !== null) {
-            $this->media->setProduct(null);
+            $this->media->setPost(null);
         }
 
         // set the owning side of the relation if necessary
-        if ($media !== null && $media->getProduct() !== $this) {
-            $media->setProduct($this);
+        if ($media !== null && $media->getPost() !== $this) {
+            $media->setPost($this);
         }
 
         $this->media = $media;

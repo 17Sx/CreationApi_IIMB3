@@ -7,10 +7,11 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Post as ApiPost;
 use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use App\State\UserPasswordHasherProcessor;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -25,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Post(
+        new ApiPost(
             processor: UserPasswordHasherProcessor::class
         ),
         new Get(security: "is_granted('ROLE_ADMIN') or object == user",),
@@ -71,15 +72,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['write'])]
     private ?string $plainPassword = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Groups(['read', 'write'])]
     #[Assert\NotBlank()]
-    private ?string $firstname = null;
+    private ?string $username = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['read', 'write'])]
-    #[Assert\NotBlank()]
-    private ?string $lastname = null;
+    private ?string $bio = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['read', 'write'])]
+    private ?string $avatar = null;
 
     public function getId(): ?int
     {
@@ -174,26 +178,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // @deprecated, to be removed when upgrading to Symfony 8
     }
 
-    public function getFirstname(): ?string
+    public function getUsername(): ?string
     {
-        return $this->firstname;
+        return $this->username;
     }
 
-    public function setFirstname(string $firstname): static
+    public function setUsername(string $username): static
     {
-        $this->firstname = $firstname;
+        $this->username = $username;
 
         return $this;
     }
 
-    public function getLastname(): ?string
+    public function getBio(): ?string
     {
-        return $this->lastname;
+        return $this->bio;
     }
 
-    public function setLastname(string $lastname): static
+    public function setBio(?string $bio): static
     {
-        $this->lastname = $lastname;
+        $this->bio = $bio;
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }
