@@ -13,9 +13,8 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            lazy: true
-            provider: app_user_provider
+        login:
+            pattern: ^/api/login
             stateless: true
             json_login:
                 check_path: /api/login
@@ -23,6 +22,10 @@ security:
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        main:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
             jwt: ~
 
     # Easy way to control access for large sections of your site

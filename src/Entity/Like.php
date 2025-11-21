@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post as ApiPost;
 use App\Repository\LikeRepository;
+use App\State\LikeDeleteProcessor;
+use App\State\LikeUserProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -17,8 +19,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(),
         new Get(),
-        new ApiPost(),
-        new Delete()
+        new ApiPost(processor: LikeUserProcessor::class),
+        new Delete(processor: LikeDeleteProcessor::class)
     ],
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],

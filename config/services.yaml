@@ -21,5 +21,17 @@ services:
         arguments:
             $persistProcessor: "@api_platform.doctrine.orm.state.persist_processor"
 
+    App\State\CommentAuthorProcessor:
+        arguments:
+            $persistProcessor: "@api_platform.doctrine.orm.state.persist_processor"
+
+    App\State\LikeUserProcessor:
+        arguments:
+            $persistProcessor: "@api_platform.doctrine.orm.state.persist_processor"
+
+    App\State\LikeDeleteProcessor:
+        arguments:
+            $deleteProcessor: "@api_platform.doctrine.orm.state.remove_processor"
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -3,86 +3,102 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>patapim social 🔥💀</title>
+        <title>PATAPIM ZONE</title>
         <link rel="stylesheet" href="/css/style.css" />
     </head>
     <body>
+        <div class="stars"></div>
+        <div class="side-images">
+            <img src="/img/crodidi.png" alt="Crodidi" class="side-image side-image-left" />
+            <img src="/img/vache.png" alt="Vache" class="side-image side-image-right" />
+        </div>
         <div class="container">
             <header class="header">
-                <h1 class="logo">🔥 patapim social 💀</h1>
+                <h1 class="logo">PATAPIM ZONE</h1>
                 <div id="auth-section" class="auth-section">
-                    <button
-                        type="button"
-                        id="login-btn"
-                        class="btn btn-primary"
-                    >
-                        connexion
+                    <button type="button" id="login-btn" class="btn btn-primary">
+                        SE CONNECTER
                     </button>
-                    <button
-                        type="button"
-                        id="register-btn"
-                        class="btn btn-outline"
-                    >
-                        inscription
+                    <button type="button" id="register-btn" class="btn btn-secondary">
+                        S'INSCRIRE
                     </button>
                 </div>
                 <div id="user-section" class="user-section hidden">
-                    <span id="username-display" class="username"></span>
-                    <button id="logout-btn" class="btn btn-outline">
-                        déco
+                    <div class="user-badge">
+                        <span id="username-display" class="username"></span>
+                    </div>
+                    <button id="logout-btn" class="btn btn-danger">
+                        DECONNEXION
                     </button>
                 </div>
             </header>
 
             <div id="auth-modal" class="modal hidden">
+                <div class="modal-backdrop"></div>
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <h2 id="modal-title">Connexion</h2>
+                    <h2 id="modal-title" class="modal-title">CONNEXION</h2>
                     <form id="auth-form">
-                        <input
-                            type="email"
-                            id="email"
-                            placeholder="Email"
-                            required
-                        />
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="Password"
-                            required
-                        />
-                        <input
-                            type="text"
-                            id="username"
-                            placeholder="Username"
-                            class="hidden"
-                        />
-                        <input
-                            type="text"
-                            id="bio"
-                            placeholder="Bio brainrot"
-                            class="hidden"
-                        />
-                        <button type="submit" class="btn btn-primary">
-                            GO
+                        <div class="input-group">
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="Email"
+                                required
+                            />
+                        </div>
+                        <div class="input-group">
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Mot de passe"
+                                required
+                            />
+                        </div>
+                        <div class="input-group hidden" id="username-group">
+                            <input
+                                type="text"
+                                id="username"
+                                placeholder="Pseudo"
+                            />
+                        </div>
+                        <div class="input-group hidden" id="bio-group">
+                            <input
+                                type="text"
+                                id="bio"
+                                placeholder="Bio"
+                            />
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            VALIDER
                         </button>
                     </form>
                 </div>
             </div>
 
             <main class="main-content">
-                <div class="post-creator">
+                <div class="post-creator hidden">
+                    <div class="creator-header">
+                        <h3>NOUVEAU POST</h3>
+                    </div>
                     <textarea
                         id="post-content"
-                        placeholder="quoi de neuf sur le patapim ?? 💀🔥"
+                        placeholder="Quoi de neuf ?"
                         maxlength="280"
                     ></textarea>
                     <div class="post-creator-footer">
-                        <span id="char-count">280</span>
+                        <div class="char-counter">
+                            <span id="char-count">280</span>
+                            <span class="char-label">caractères</span>
+                        </div>
                         <button id="post-btn" class="btn btn-primary">
-                            pataposter 🚀
+                            PUBLIER
                         </button>
                     </div>
+                </div>
+
+                <div class="feed-header">
+                    <h2>FIL D'ACTUALITE</h2>
                 </div>
 
                 <div id="posts-feed" class="posts-feed">
