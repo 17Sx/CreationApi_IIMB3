@@ -13,8 +13,13 @@ services:
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
+
     App\:
         resource: "../src/"
+
+    App\State\PostAuthorProcessor:
+        arguments:
+            $persistProcessor: "@api_platform.doctrine.orm.state.persist_processor"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

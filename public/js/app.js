@@ -252,7 +252,7 @@ async function loadPosts() {
         if (response.ok) {
             const data = await response.json();
             console.log('[loadPosts] data:', data);
-            const posts = data['hydra:member'] || [];
+            const posts = data['hydra:member'] || (Array.isArray(data) ? data : []);
             if (posts.length === 0) {
                 postsFeed.innerHTML = '<div class="loading">Aucun post pour le moment 💀</div>';
                 return;
@@ -285,9 +285,6 @@ function createPostHTML(post) {
             <div class="post-actions">
                 <button class="post-action like-btn" data-post-id="${post.id}">
                     ❤️ <span>${post.likesCount || 0}</span>
-                </button>
-                <button class="post-action repost-btn" data-post-id="${post.id}">
-                    🔄 <span>${post.repostsCount || 0}</span>
                 </button>
                 <button class="post-action comment-btn" data-post-id="${post.id}">
                     💬 <span>0</span>

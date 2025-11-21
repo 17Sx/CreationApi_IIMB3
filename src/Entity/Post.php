@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post as ApiPost;
 use ApiPlatform\Metadata\Put;
 use App\Repository\PostRepository;
+use App\State\PostAuthorProcessor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(),
         new Get(),
-        new ApiPost(),
+        new ApiPost(processor: PostAuthorProcessor::class),
         new Put(),
         new Patch(),
         new Delete()
@@ -61,7 +62,7 @@ class Post
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('read')]
+    #[Groups(['read'])]
     private ?User $author = null;
 
     #[ORM\Column]

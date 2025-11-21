@@ -7,6 +7,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Core\Event\AuthenticationSuccessEvent;
 
+#[AsEventListener(event: JWTCreatedEvent::class, method: 'onJWTCreated')]
 final class JWTCreatedListener
 {
     public function __construct(private UserRepository $userRepository)
