@@ -18,8 +18,19 @@ final class JWTCreatedListener
         $user = $this->userRepository
             ->findOneByEmail($payload['username']);
 
-        $payload['firstname'] = $user->getFirstname();
-        $payload['lastname'] = $user->getLastname();
+        if ($user) {
+            // Ensure the token's 'username' claim matches the user provider's identifier (email)
+            $payload['username'] = $user->getEmail();
+            // Also include an explicit email claim for clarity
+            $payload['email'] = $user->getEmail();
+            // Do not call non-existent getters. Use known fields only.
+            $payload['firstname'] = $user->getUsername();
+            $payload['lastname'] = '';
+        } else {
+            // If we couldn't find a user, keep the username as-is and empty names
+            $payload['firstname'] = $payload['username'] ?? '';
+            $payload['lastname'] = '';
+        }
         $event->setData($payload);
     }
 }

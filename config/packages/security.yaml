@@ -1,7 +1,7 @@
 security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -18,7 +18,7 @@ security:
             provider: app_user_provider
             stateless: true
             json_login:
-                check_path: auth
+                check_path: /api/login
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success

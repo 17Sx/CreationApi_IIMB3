@@ -1,6 +1,13 @@
 const API_URL = 'https://127.0.0.1:8000/api';
 let currentUser = null;
-let token = localStorage.getItem('token');
+
+function readToken() {
+    const t = localStorage.getItem('token');
+    if (!t || t === 'null' || t === 'undefined') return null;
+    return t;
+}
+
+let token = readToken();
 
 // DOM Elements
 const authSection = document.getElementById('auth-section');
@@ -26,6 +33,9 @@ let isRegisterMode = false;
 init();
 
 async function init() {
+    // Re-read token at startup in case localStorage changed
+    token = readToken();
+    console.log('[init] token present:', !!token);
     if (token) {
         await loadCurrentUser();
     }
@@ -34,6 +44,10 @@ async function init() {
 }
 
 function setupEventListeners() {
+    console.log('Setting up event listeners');
+    console.log('loginBtn:', loginBtn);
+    console.log('registerBtn:', registerBtn);
+    console.log('authModal:', authModal);
     loginBtn.addEventListener('click', () => openAuthModal(false));
     registerBtn.addEventListener('click', () => openAuthModal(true));
     logoutBtn.addEventListener('click', logout);
@@ -50,6 +64,7 @@ function setupEventListeners() {
 }
 
 function openAuthModal(register = false) {
+    console.log('openAuthModal called with register:', register);
     isRegisterMode = register;
     modalTitle.textContent = register ? 'Inscription' : 'Connexion';
     usernameInput.classList.toggle('hidden', !register);
@@ -61,18 +76,22 @@ async function handleAuth(e) {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    console.log('[handleAuth] email:', email, 'isRegisterMode:', isRegisterMode);
 
     if (isRegisterMode) {
         const username = usernameInput.value;
         const bio = bioInput.value;
+        console.log('[handleAuth] register mode, username:', username, 'bio:', bio);
         await register(email, password, username, bio);
     } else {
+        console.log('[handleAuth] login mode');
         await login(email, password);
     }
 }
 
 async function register(email, password, username, bio) {
     try {
+        console.log('[register] POST', `${API_URL}/users`, { email, password, username, bio });
         const response = await fetch(`${API_URL}/users`, {
             method: 'POST',
             headers: {
@@ -81,27 +100,29 @@ async function register(email, password, username, bio) {
             body: JSON.stringify({
                 email,
                 plainPassword: password,
-                username,
+                username: email,
                 bio
             })
         });
-
+        console.log('[register] response status:', response.status);
         if (response.ok) {
             alert('Inscription réussie ! Tu peux te connecter maintenant 🔥');
             authModal.classList.add('hidden');
             authForm.reset();
         } else {
             const error = await response.json();
+            console.log('[register] error:', error);
             alert(`Erreur: ${error.message || 'Impossible de créer le compte'}`);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[register] Error:', error);
         alert('Erreur réseau 💀');
     }
 }
 
 async function login(email, password) {
     try {
+        console.log('[login] POST', `${API_URL}/login`, { email, password });
         const response = await fetch(`${API_URL}/login`, {
             method: 'POST',
             headers: {
@@ -109,9 +130,10 @@ async function login(email, password) {
             },
             body: JSON.stringify({ email, password })
         });
-
+        console.log('[login] response status:', response.status);
         if (response.ok) {
             const data = await response.json();
+            console.log('[login] success, data:', data);
             token = data.token;
             localStorage.setItem('token', token);
             await loadCurrentUser();
@@ -119,31 +141,39 @@ async function login(email, password) {
             authForm.reset();
             await loadPosts();
         } else {
+            const error = await response.text();
+            console.log('[login] failed, response:', error);
             alert('Identifiants incorrects 💀');
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[login] Error:', error);
         alert('Erreur réseau 💀');
     }
 }
 
 async function loadCurrentUser() {
     try {
-        const response = await fetch(`${API_URL}/users`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+        console.log('[loadCurrentUser] GET', `${API_URL}/me`, 'token present:', !!token);
+        const response = await fetch(`${API_URL}/me`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
-
+        console.log('[loadCurrentUser] response status:', response.status);
         if (response.ok) {
             const data = await response.json();
-            if (data['hydra:member'] && data['hydra:member'].length > 0) {
-                currentUser = data['hydra:member'][0];
-                updateUI();
+            console.log('[loadCurrentUser] data:', data);
+            currentUser = data;
+            updateUI();
+        } else {
+            const error = await response.json().catch(() => null);
+            console.log('[loadCurrentUser] failed, response:', error);
+            // If token invalid, clear it to avoid repeated 401s
+            if (response.status === 401) {
+                token = null;
+                localStorage.removeItem('token');
             }
         }
     } catch (error) {
-        console.error('Error loading user:', error);
+        console.error('[loadCurrentUser] Error:', error);
     }
 }
 
@@ -215,26 +245,27 @@ async function createPost() {
 
 async function loadPosts() {
     try {
+        console.log('[loadPosts] GET', `${API_URL}/posts?order[createdAt]=desc`);
         postsFeed.innerHTML = '<div class="loading">Chargement des patapims... 🔥</div>';
-        
         const response = await fetch(`${API_URL}/posts?order[createdAt]=desc`);
-        
+        console.log('[loadPosts] response status:', response.status);
         if (response.ok) {
             const data = await response.json();
+            console.log('[loadPosts] data:', data);
             const posts = data['hydra:member'] || [];
-            
             if (posts.length === 0) {
                 postsFeed.innerHTML = '<div class="loading">Aucun post pour le moment 💀</div>';
                 return;
             }
-            
             postsFeed.innerHTML = posts.map(post => createPostHTML(post)).join('');
             setupPostActions();
         } else {
+            const error = await response.text();
+            console.log('[loadPosts] failed, response:', error);
             postsFeed.innerHTML = '<div class="loading">Erreur de chargement 💀</div>';
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[loadPosts] Error:', error);
         postsFeed.innerHTML = '<div class="loading">Erreur réseau 💀</div>';
     }
 }

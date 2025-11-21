@@ -1,55 +1,96 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>patapim social 🔥💀</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <div class="container">
-        <header class="header">
-            <h1 class="logo">🔥 patapim social 💀</h1>
-            <div id="auth-section" class="auth-section">
-                <button id="login-btn" class="btn btn-primary">connexion</button>
-                <button id="register-btn" class="btn btn-outline">inscription</button>
-            </div>
-            <div id="user-section" class="user-section hidden">
-                <span id="username-display" class="username"></span>
-                <button id="logout-btn" class="btn btn-outline">déco</button>
-            </div>
-        </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>patapim social 🔥💀</title>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <header class="header">
+                <h1 class="logo">🔥 patapim social 💀</h1>
+                <div id="auth-section" class="auth-section">
+                    <button
+                        type="button"
+                        id="login-btn"
+                        class="btn btn-primary"
+                    >
+                        connexion
+                    </button>
+                    <button
+                        type="button"
+                        id="register-btn"
+                        class="btn btn-outline"
+                    >
+                        inscription
+                    </button>
+                </div>
+                <div id="user-section" class="user-section hidden">
+                    <span id="username-display" class="username"></span>
+                    <button id="logout-btn" class="btn btn-outline">
+                        déco
+                    </button>
+                </div>
+            </header>
 
-        <div id="auth-modal" class="modal hidden">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2 id="modal-title">Connexion</h2>
-                <form id="auth-form">
-                    <input type="email" id="email" placeholder="Email" required>
-                    <input type="password" id="password" placeholder="Password" required>
-                    <input type="text" id="username" placeholder="Username" class="hidden">
-                    <input type="text" id="bio" placeholder="Bio brainrot" class="hidden">
-                    <button type="submit" class="btn btn-primary">GO</button>
-                </form>
-            </div>
-        </div>
-
-        <main class="main-content">
-            <div class="post-creator">
-                <textarea id="post-content" placeholder="quoi de neuf sur le patapim ?? 💀🔥" maxlength="280"></textarea>
-                <div class="post-creator-footer">
-                    <span id="char-count">280</span>
-                    <button id="post-btn" class="btn btn-primary">pataposter 🚀</button>
+            <div id="auth-modal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2 id="modal-title">Connexion</h2>
+                    <form id="auth-form">
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Email"
+                            required
+                        />
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Password"
+                            required
+                        />
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Username"
+                            class="hidden"
+                        />
+                        <input
+                            type="text"
+                            id="bio"
+                            placeholder="Bio brainrot"
+                            class="hidden"
+                        />
+                        <button type="submit" class="btn btn-primary">
+                            GO
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <div id="posts-feed" class="posts-feed">
-                <!-- Posts will be loaded here -->
-            </div>
-        </main>
-    </div>
+            <main class="main-content">
+                <div class="post-creator">
+                    <textarea
+                        id="post-content"
+                        placeholder="quoi de neuf sur le patapim ?? 💀🔥"
+                        maxlength="280"
+                    ></textarea>
+                    <div class="post-creator-footer">
+                        <span id="char-count">280</span>
+                        <button id="post-btn" class="btn btn-primary">
+                            pataposter 🚀
+                        </button>
+                    </div>
+                </div>
 
-    <script src="/js/app.js"></script>
-</body>
+                <div id="posts-feed" class="posts-feed">
+                    <!-- Posts will be loaded here -->
+                </div>
+            </main>
+        </div>
+
+        <script src="/js/app.js"></script>
+    </body>
 </html>
-
