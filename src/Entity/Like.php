@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -15,6 +18,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LikeRepository::class)]
 #[ORM\Table(name: '`like`')]
+#[ApiFilter(SearchFilter::class, properties: [
+    'user.id' => 'exact',
+    'post.id' => 'exact'
+])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 #[ApiResource(
     operations: [
         new GetCollection(),
@@ -24,6 +32,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     ],
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
+    forceEager: false,
 )]
 class Like
 {
@@ -35,7 +44,7 @@ class Like
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read', 'write'])]
+    #[Groups(['read'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Post::class)]

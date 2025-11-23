@@ -4,9 +4,11 @@ api_platform:
     defaults:
         stateless: true
         cache_headers:
-            vary: ['Content-Type', 'Authorization', 'Origin']
+            vary: ["Content-Type", "Authorization", "Origin"]
 
     formats:
-        json: [ 'application/json' ]
-        jsonld: [ 'application/ld+json' ]
-        multipart: [ 'multipart/form-data' ]
+        json: ["application/json"]
+        jsonld: ["application/ld+json"]
+        multipart: ["multipart/form-data"]
+    eager_loading:
+        max_joins: 30

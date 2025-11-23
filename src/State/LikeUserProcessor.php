@@ -21,20 +21,24 @@ class LikeUserProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         if ($data instanceof Like) {
-            $user = $this->security->getUser();
-            if ($user) {
-                $data->setUser($user);
-                
-                $post = $data->getPost();
-                if ($post) {
-                    $existingLike = $this->likeRepository->findOneByUserAndPost($user, $post);
-                    if ($existingLike) {
-                        return $existingLike;
+            try {
+                $user = $this->security->getUser();
+                if ($user) {
+                    $data->setUser($user);
+
+                    $post = $data->getPost();
+                    if ($post) {
+                        $existingLike = $this->likeRepository->findOneByUserAndPost($user, $post);
+                        if ($existingLike) {
+                            return $existingLike;
+                        }
+
+                        $post->setLikesCount($post->getLikesCount() + 1);
+                        $this->entityManager->persist($post);
                     }
-                    
-                    $post->setLikesCount($post->getLikesCount() + 1);
-                    $this->entityManager->persist($post);
                 }
+            } catch (\Throwable $e) {
+                return $this->persistProcessor->process($data, $operation, $uriVariables, $context);
             }
         }
         return $this->persistProcessor->process($data, $operation, $uriVariables, $context);

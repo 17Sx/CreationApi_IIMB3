@@ -21,7 +21,6 @@ class LikeDeleteProcessor implements ProcessorInterface
             if ($post && $post->getLikesCount() > 0) {
                 $post->setLikesCount($post->getLikesCount() - 1);
                 $this->entityManager->persist($post);
-                $this->entityManager->flush();
             }
         }
         
